@@ -1,0 +1,41 @@
+version: '3.7'
+
+networks:
+  php5: 
+    driver: bridge
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php5
+    volumes: 
+      - ./htdocs:/var/www/html
+    ports:
+      - "9000:80"
+    networks:
+      - php5
+    depends_on:
+      - mysql
+  mysql: 
+    image: mysql:5.7.36
+    container_name: mysqlphp5
+    restart: unless-stopped
+    tty: true
+    ports: 
+      - "3307:3306"
+    volumes:
+      - ../mysql57:/var/lib/mysql 
+    environment:
+      MYSQL_DATABASE_NAME: homestead
+      MYSQL_DATABASE_USER: root
+      MYSQL_DATABASE_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    command: mysqld --sql_mode="" --character-set-server=utf8 --collation-server=utf8_slovenian_ci --init-connect='SET NAMES UTF8;' --innodb-flush-log-at-trx-commit=0
+    networks:
+      - php5
+  
+  
